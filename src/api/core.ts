@@ -9,7 +9,6 @@ const axiosInstance: AxiosInstance = axios.create({
 
 const createApiMethod =
   (_axiosInstance: AxiosInstance, methodType: Method) =>
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (config: AxiosRequestConfig): Promise<any> => {
     _axiosInstance.interceptors.response.use(response => {
       if (!response.data) return response;
