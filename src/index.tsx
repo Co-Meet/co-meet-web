@@ -1,16 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {QueryClient, QueryClientProvider} from 'react-query';
 import {BrowserRouter as Router} from 'react-router-dom';
 import App from './App';
-
-const queryClient = new QueryClient();
+import {LoginProvider} from './contexts/LoginContext';
 
 ReactDOM.render(
-  <QueryClientProvider client={queryClient}>
-    <Router>
+  <Router>
+    <LoginProvider>
       <App />
-    </Router>
-  </QueryClientProvider>,
+    </LoginProvider>
+  </Router>,
   document.getElementById('app'),
 );

@@ -21,3 +21,8 @@ export const checkGithubId = (githubId: any): Promise<any> =>
   api.get({
     url: `/members/check-githubId/${githubId}`,
   });
+
+export const getOrganizationOfMember = (): Promise<any> =>
+  api.get({
+    url: '/members/organizations',
+  });
