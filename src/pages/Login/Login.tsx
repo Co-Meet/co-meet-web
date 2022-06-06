@@ -26,9 +26,7 @@ function Login() {
 
   const setToken = useCallback((data: any): void => {
     const accessToken = data.accessToken;
-    cookies.set('access_token', accessToken, {
-      expires: new Date(Date.now() + 1000 * 60 * 15),
-    });
+    cookies.set('access_token', accessToken, {});
   }, []);
 
   const _handleSubmit = useCallback((): void => {
@@ -38,6 +36,7 @@ function Login() {
         if (res) {
           setIsLogin(true);
           setToken(res);
+          history.push('/main');
         }
       })
       .catch(() => {
