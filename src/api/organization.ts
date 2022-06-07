@@ -1,18 +1,28 @@
 import api from './core';
+import {
+  AddMemberRequestData,
+  CreateOrganizationRequestData,
+  Organization,
+} from '../types/dto/organization';
 
-export const createOrganization = (createOrganization: any): Promise<any> =>
+export const createOrganization = (
+  createOrganizationRequestData: CreateOrganizationRequestData,
+): Promise<Organization> =>
   api.post({
     url: '/organizations',
-    data: createOrganization,
+    data: createOrganizationRequestData,
   });
 
-export const getOrganization = (id: any): Promise<any> =>
+export const getOrganization = (id: number): Promise<Organization> =>
   api.get({
     url: `/organizations/${id}`,
   });
 
-export const addMemberToOrganization = (id: any, addMemberToOrganization: any): Promise<any> =>
+export const addMember = (
+  id: any,
+  addMemberRequestData: AddMemberRequestData,
+): Promise<Organization> =>
   api.patch({
     url: '/organizations/${id}',
-    data: addMemberToOrganization,
+    data: addMemberRequestData,
   });

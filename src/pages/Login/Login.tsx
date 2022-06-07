@@ -2,26 +2,28 @@ import React, {useState, useCallback, useContext} from 'react';
 import {useHistory} from 'react-router-dom';
 import {useMutation} from 'react-query';
 import Cookies from 'universal-cookie';
-import {Nickname} from '../../types/member';
 import {Form, Input, Button} from 'antd';
 import {LoginContext} from '../../contexts/LoginContext';
 import {login} from '../../api/member';
+import {LoginRequestData} from '../../types/dto/member';
 
 const cookies = new Cookies();
 
 function Login() {
   const {setIsLogin} = useContext(LoginContext);
   const history = useHistory();
-  const mutationLogin = useMutation((user: Nickname) => login(user));
+  const mutationLogin = useMutation((loginRequestData: LoginRequestData) =>
+    login(loginRequestData),
+  );
 
-  const [member, setMember] = useState({nickname: '', githubId: ''});
+  const [loginRequestData, setLoginRequestData] = useState({nickname: ''});
   const [errorMsg, setErrorMsg] = useState('');
 
-  const _handleChange = useCallback(
+  const handleOnChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>): void => {
-      setMember({...member, [e.target.name]: e.target.value});
+      setLoginRequestData({...loginRequestData, [e.target.name]: e.target.value});
     },
-    [member],
+    [loginRequestData],
   );
 
   const setToken = useCallback((data: any): void => {
@@ -29,9 +31,9 @@ function Login() {
     cookies.set('access_token', accessToken, {});
   }, []);
 
-  const _handleSubmit = useCallback((): void => {
+  const handleLogin = useCallback((): void => {
     mutationLogin
-      .mutateAsync(member)
+      .mutateAsync(loginRequestData)
       .then(res => {
         if (res) {
           setIsLogin(true);
@@ -42,11 +44,11 @@ function Login() {
       .catch(() => {
         setErrorMsg('로그인에 실패했습니다');
       });
-  }, [mutationLogin, setIsLogin, setToken, member]);
+  }, [mutationLogin, setIsLogin, setToken, loginRequestData]);
 
   return (
     <div>
-      <Form onFinish={_handleSubmit} autoComplete="off">
+      <Form onFinish={handleLogin} autoComplete="off">
         <Form.Item
           label="닉네임"
           name="nickname"
@@ -58,7 +60,12 @@ function Login() {
             },
           ]}
         >
-          <Input name="nickname" value={member.nickname} onChange={_handleChange} size="large" />
+          <Input
+            name="nickname"
+            value={loginRequestData.nickname}
+            onChange={handleOnChange}
+            size="large"
+          />
         </Form.Item>
         <Form.Item>
           <p>{errorMsg}</p>
