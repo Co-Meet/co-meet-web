@@ -1,40 +1,41 @@
-import React, {useState, useCallback, useContext} from 'react';
+import React, {useState, useCallback} from 'react';
 import {useHistory} from 'react-router-dom';
 import {useMutation} from 'react-query';
-import {Member} from '../../types/member';
 import {Form, Input, Button, notification} from 'antd';
 import {checkGithubId, checkNickname, join} from '../../api/member';
+import {JoinRequestData} from '../../types/dto/member';
 
 function Join() {
   const history = useHistory();
   const mutationCheckNickname = useMutation((email: string) => checkNickname(email));
   const mutationCheckGithubId = useMutation((githubId: string) => checkGithubId(githubId));
-  const mutationJoin = useMutation((user: Member) => join(user));
+  const mutationJoin = useMutation((joinRequestData: JoinRequestData) => join(joinRequestData));
 
-  const [user, setUser] = useState({nickname: '', githubId: ''});
+  const [joinRequestData, setJoinRequestData] = useState({nickname: '', githubId: ''});
   const [errorMsg, setErrorMessage] = useState('');
-  const [canJoin, setCanJoin] = useState(false);
+  const [isCheckedNickname, setIsCheckedNickname] = useState(false);
+  const [isCheckedGithubId, setIsCheckedGithubId] = useState(false);
 
-  const _handleChange = useCallback(
+  const handleOnChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>): void => {
-      setUser({...user, [e.target.name]: e.target.value});
+      setJoinRequestData({...joinRequestData, [e.target.name]: e.target.value});
     },
-    [user],
+    [joinRequestData],
   );
 
-  const _checkNickname = useCallback((): void => {
-    if (!user.nickname) {
+  const handleCheckNickname = useCallback((): void => {
+    if (!joinRequestData.nickname) {
       notification.open({
         message: '닉네임을 입력해주세요',
       });
     } else {
       mutationCheckNickname
-        .mutateAsync(user.nickname)
+        .mutateAsync(joinRequestData.nickname)
         .then(() => {
           notification.open({
             message: '닉네임 인증이 완료되었습니다',
           });
-          setCanJoin(true);
+          setIsCheckedNickname(true);
         })
         .catch(err => {
           if (err.message.includes('404')) {
@@ -48,21 +49,21 @@ function Join() {
           }
         });
     }
-  }, [mutationCheckNickname, user.nickname]);
+  }, [mutationCheckNickname, joinRequestData.nickname]);
 
-  const _checkGithubId = useCallback((): void => {
-    if (!user.githubId) {
+  const handleCheckGithubId = useCallback((): void => {
+    if (!joinRequestData.githubId) {
       notification.open({
         message: '깃허브 아이디를 입력해주세요',
       });
     } else {
       mutationCheckGithubId
-        .mutateAsync(user.githubId)
+        .mutateAsync(joinRequestData.githubId)
         .then(() => {
           notification.open({
             message: '깃허브 아이디 인증이 완료되었습니다',
           });
-          setCanJoin(true);
+          setIsCheckedGithubId(true);
         })
         .catch(err => {
           if (err.message.includes('404')) {
@@ -76,12 +77,12 @@ function Join() {
           }
         });
     }
-  }, [mutationCheckNickname, user.githubId]);
+  }, [mutationCheckNickname, joinRequestData.githubId]);
 
-  const _handleSubmit = useCallback((): void => {
-    if (canJoin) {
+  const handleJoin = useCallback((): void => {
+    if (isCheckedNickname && isCheckedGithubId) {
       mutationJoin
-        .mutateAsync(user)
+        .mutateAsync(joinRequestData)
         .then(() => {
           notification.open({
             message: '회원가입에 성공했습니다',
@@ -95,15 +96,19 @@ function Join() {
             description: '다시 시도해주세요',
           });
         });
-    } else if (!canJoin) {
+    } else {
       setErrorMessage('인증을 완료해주세요');
     }
-  }, [canJoin, mutationJoin, history, user]);
+  }, [isCheckedNickname, isCheckedGithubId, mutationJoin, history, joinRequestData]);
 
   return (
     <div>
-      <Form onFinish={_handleSubmit} autoComplete="off">
-        <Button type="link" onClick={_checkNickname} disabled={mutationCheckNickname.isLoading}>
+      <Form onFinish={handleJoin} autoComplete="off">
+        <Button
+          type="link"
+          onClick={handleCheckNickname}
+          disabled={mutationCheckNickname.isLoading}
+        >
           닉네임 중복 확인
         </Button>
         <Form.Item
@@ -117,9 +122,18 @@ function Join() {
             },
           ]}
         >
-          <Input name="nickname" value={user.nickname} onChange={_handleChange} size="large" />
+          <Input
+            name="nickname"
+            value={joinRequestData.nickname}
+            onChange={handleOnChange}
+            size="large"
+          />
         </Form.Item>
-        <Button type="link" onClick={_checkGithubId} disabled={mutationCheckGithubId.isLoading}>
+        <Button
+          type="link"
+          onClick={handleCheckGithubId}
+          disabled={mutationCheckGithubId.isLoading}
+        >
           깃허브 아이디 존재 확인
         </Button>
         <Form.Item
@@ -133,7 +147,12 @@ function Join() {
             },
           ]}
         >
-          <Input name="githubId" value={user.githubId} onChange={_handleChange} size="large" />
+          <Input
+            name="githubId"
+            value={joinRequestData.githubId}
+            onChange={handleOnChange}
+            size="large"
+          />
         </Form.Item>
         <p>{errorMsg}</p>
         <Form.Item>
