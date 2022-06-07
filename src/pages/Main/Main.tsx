@@ -1,18 +1,23 @@
 import React, {useCallback} from 'react';
 import {useHistory} from 'react-router-dom';
 import {useQuery} from 'react-query';
-import {getOrganizationOfMember} from '../../api/member';
+import {getMyOrganization} from '../../api/member';
 import Loading from '../../components/Loading';
 import {Col, Row} from 'antd';
+import {Organization} from '../../types/dto/organization';
+import {Member} from '../../types/dto/member';
 
 function Main() {
   const history = useHistory();
-  const {status, data} = useQuery(['organizations'], () => getOrganizationOfMember());
+  const {status, data} = useQuery(['organizations'], () => getMyOrganization());
 
-  const _handleHistory = useCallback(
+  const handleOrganizationInfo = useCallback(
     async (idx: any): Promise<void> => {
-      const organizationList = data.organizationList[idx];
+      const organizationList = data?.organizationList[idx];
     },
+    /**
+         TODO : 오거니제이션 상세정보 보여주는 페이지
+         */
     [data, history],
   );
 
@@ -23,14 +28,13 @@ function Main() {
       case 'success':
         const organizationList = data.organizationList;
         const members = organizationList[0].members;
-        console.log(members);
         return (
           <Row gutter={[16, 16]} style={{marginTop: '30px'}}>
-            {organizationList.map((organization: any, idx: number) => (
+            {organizationList.map((organization: Organization, idx: number) => (
               <Col key={organization.id} xs={24} md={12} lg={8}>
-                <div onClick={() => _handleHistory(idx)} key={organization.id}>
+                <div onClick={() => handleOrganizationInfo(idx)} key={organization.id}>
                   <div>{organization.name}</div>
-                  {organization.members.map((member: any, idx: number) => (
+                  {organization.members.map((member: Member, idx: number) => (
                     <div>{member.nickname}</div>
                   ))}
                 </div>
@@ -39,7 +43,7 @@ function Main() {
           </Row>
         );
     }
-  }, [_handleHistory, data, status]);
+  }, [handleOrganizationInfo, data, status]);
   return (
     <div>
       <h2 style={{fontWeight: 'bold'}}>내가 속한 오거니제이션 보기</h2>
