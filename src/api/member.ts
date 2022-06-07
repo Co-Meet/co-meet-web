@@ -1,28 +1,33 @@
 import api from '../api/core';
+import {
+  GetMyOrganizationResponseData,
+  JoinRequestData,
+  LoginRequestData,
+} from '../types/dto/member';
 
-export const login = (login: any): Promise<any> =>
+export const login = (loginRequestData: LoginRequestData): Promise<string> =>
   api.post({
     url: '/members/login',
-    data: login,
+    data: loginRequestData,
   });
 
-export const join = (join: any): Promise<any> =>
+export const join = (joinRequestData: JoinRequestData): Promise<string> =>
   api.post({
     url: '/members/join',
-    data: join,
+    data: joinRequestData,
   });
 
-export const checkNickname = (nickname: any): Promise<any> =>
+export const checkNickname = (nickname: string): Promise<string> =>
   api.get({
     url: `/members/check-nickname/${nickname}`,
   });
 
-export const checkGithubId = (githubId: any): Promise<any> =>
+export const checkGithubId = (githubId: string): Promise<string> =>
   api.get({
     url: `/members/check-githubId/${githubId}`,
   });
 
-export const getOrganizationOfMember = (): Promise<any> =>
+export const getMyOrganization = (): Promise<GetMyOrganizationResponseData> =>
   api.get({
     url: '/members/organizations',
   });
