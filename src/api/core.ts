@@ -18,7 +18,6 @@ const createApiMethod =
       if (config.headers) {
         config.headers.Authorization = token ? `Bearer ${token}` : '';
       }
-      console.log(config);
       return config;
     });
 
