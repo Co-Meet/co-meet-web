@@ -14,10 +14,14 @@ function Main() {
   const handleOrganizationInfo = useCallback(
     async (idx: any): Promise<void> => {
       const organizationList = data?.organizationList[idx];
+      history.push('/organization-detail', {
+        state: {
+          id: organizationList?.id,
+          members: organizationList?.members,
+          name: organizationList?.name,
+        },
+      });
     },
-    /**
-         TODO : 오거니제이션 상세정보 보여주는 페이지
-         */
     [data, history],
   );
 

@@ -3,3 +3,4 @@ export const NOT_FOUND_PAGE = '/not-found';
 export const LOGIN_PAGE = '/login';
 export const JOIN_PAGE = '/join';
 export const MAIN_PAGE = '/main';
+export const ORGANIZATION_DETAIL_PAGE = '/organization-detail';
