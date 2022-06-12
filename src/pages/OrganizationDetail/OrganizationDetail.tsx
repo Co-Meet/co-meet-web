@@ -1,24 +1,32 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import {useLocation} from 'react-router-dom';
 import {Col, Row} from 'antd';
 import {Member} from '../../types/dto/member';
 import {useQuery} from 'react-query';
 import {getCommit} from '../../api/commit';
+import Modal from '../../components/OrganizationDetail/Modal';
 
 function OrganizationDetail() {
   const {state} = useLocation();
+  const [isOpenModal, setOpenModal] = useState<boolean>(false);
+
+  const onClickToggleModal = useCallback(() => {
+    setOpenModal(!isOpenModal);
+  }, [isOpenModal]);
+
   const data: any = state;
+  const organizationId = data.state.id;
   const memberList = data.state.members;
   let commitList: any = [];
 
   const handleMemberCommitInfo = useCallback(() => {
     commitList = memberList.map((member: Member) => {
-      const {status, data} = useQuery(['organizations'], () => getCommit(member.id));
+      const {data} = useQuery(['organizations'], () => getCommit(member.id));
       return {nickname: member.nickname, commits: data?.commits};
     });
   }, []);
 
-  const renderByStatus = useCallback(() => {
+  const renderOrganizationInfo = useCallback(() => {
     return (
       <Row gutter={[16, 16]} style={{marginTop: '30px'}}>
         {handleMemberCommitInfo()}
@@ -33,10 +41,13 @@ function OrganizationDetail() {
       </Row>
     );
   }, []);
+
   return (
     <div>
       <h2 style={{fontWeight: 'bold'}}>오거니제이션 정보 보기</h2>
-      {renderByStatus()}
+      {isOpenModal && <Modal onClickToggleModal={onClickToggleModal}>{organizationId}</Modal>}
+      <button onClick={onClickToggleModal}>Open Modal</button>
+      {renderOrganizationInfo()}
     </div>
   );
 }
