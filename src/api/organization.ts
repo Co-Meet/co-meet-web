@@ -26,3 +26,8 @@ export const addMember = (
     url: `/organizations/${id}/in`,
     data: addMemberRequestData,
   });
+
+export const removeMember = (id: any): Promise<Organization> =>
+  api.patch({
+    url: `/organizations/${id}/out`,
+  });
