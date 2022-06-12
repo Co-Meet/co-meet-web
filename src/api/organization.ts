@@ -23,6 +23,6 @@ export const addMember = (
   addMemberRequestData: AddMemberRequestData,
 ): Promise<Organization> =>
   api.patch({
-    url: '/organizations/${id}',
+    url: `/organizations/${id}/in`,
     data: addMemberRequestData,
   });
