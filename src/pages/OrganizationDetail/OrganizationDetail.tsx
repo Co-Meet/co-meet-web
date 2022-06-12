@@ -15,6 +15,7 @@ function OrganizationDetail() {
   }, [isOpenModal]);
 
   const data: any = state;
+  const organizationId = data.state.id;
   const memberList = data.state.members;
   let commitList: any = [];
 
@@ -25,7 +26,7 @@ function OrganizationDetail() {
     });
   }, []);
 
-  const renderByStatus = useCallback(() => {
+  const renderOrganizationInfo = useCallback(() => {
     return (
       <Row gutter={[16, 16]} style={{marginTop: '30px'}}>
         {handleMemberCommitInfo()}
@@ -44,11 +45,9 @@ function OrganizationDetail() {
   return (
     <div>
       <h2 style={{fontWeight: 'bold'}}>오거니제이션 정보 보기</h2>
-      {isOpenModal && (
-        <Modal onClickToggleModal={onClickToggleModal}>이곳에 children이 들어갑니다.</Modal>
-      )}
+      {isOpenModal && <Modal onClickToggleModal={onClickToggleModal}>{organizationId}</Modal>}
       <button onClick={onClickToggleModal}>Open Modal</button>
-      {renderByStatus()}
+      {renderOrganizationInfo()}
     </div>
   );
 }
