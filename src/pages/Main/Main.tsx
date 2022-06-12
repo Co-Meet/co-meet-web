@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import {useHistory} from 'react-router-dom';
 import {useMutation, useQuery} from 'react-query';
 import {getMyOrganization} from '../../api/member';
@@ -7,10 +7,17 @@ import {Col, Row} from 'antd';
 import {Organization} from '../../types/dto/organization';
 import {Member} from '../../types/dto/member';
 import {removeMember} from '../../api/organization';
+import Modal from '../../components/Main/Modal';
 
 function Main() {
   const history = useHistory();
   const {status, data} = useQuery(['organizations'], () => getMyOrganization());
+
+  const [isOpenModal, setOpenModal] = useState<boolean>(false);
+
+  const onClickToggleModal = useCallback(() => {
+    setOpenModal(!isOpenModal);
+  }, [isOpenModal]);
 
   const {mutate, isLoading, isError, error, isSuccess} = useMutation((id: number) =>
     removeMember(id),
@@ -61,9 +68,12 @@ function Main() {
         );
     }
   }, [handleOrganizationInfo, data, status]);
+
   return (
     <div>
       <h2 style={{fontWeight: 'bold'}}>내가 속한 오거니제이션 보기</h2>
+      {isOpenModal && <Modal onClickToggleModal={onClickToggleModal}></Modal>}
+      <button onClick={onClickToggleModal}>오거니제이션 생성</button>
       {renderByStatus()}
     </div>
   );
